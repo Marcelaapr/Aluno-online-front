@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Aluno } from 'src/app/shared/models/Aluno';
 import { AlunoService } from 'src/app/shared/services/aluno.service';
 import Swal from 'sweetalert2';
@@ -11,13 +11,10 @@ import Swal from 'sweetalert2';
   styleUrls: ['./cadastro-aluno.component.scss']
 })
 export class CadastroAlunoComponent implements OnInit{
+  editar;
   formGroup: FormGroup;
 
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
-
-  constructor(private alunoService: AlunoService, private router: Router){
+  constructor(private alunoService: AlunoService, private router: Router, private route: ActivatedRoute){
     this.formGroup = new FormGroup({
       id: new FormControl(null),
       name: new FormControl('', Validators.required),
@@ -28,10 +25,53 @@ export class CadastroAlunoComponent implements OnInit{
         cep: new FormControl('', Validators.required),
       })
     });
+    this.editar = false
   }
 
-  cadastrar() {
+  ngOnInit(): void {
+    if (this.route.snapshot.params["id"]){
+      this.editar = true
+      this.alunoService.pesquisarPorId(this.route.snapshot.params["id"]).subscribe(
+        aluno => {
+          this.formGroup.patchValue(aluno)
+        }
+      )
+    }
+  }
+
+  salvar() {
     const aluno: Aluno = this.formGroup.value;
+    if (this.editar){
+      this.editarAluno(aluno)
+    } else {
+      this.cadastrarAluno(aluno)
+    }
+  }
+
+
+  editarAluno(aluno: Aluno) {
+    this.alunoService.atualizar(aluno).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso',
+          text: 'Aluno editado com sucesso!',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      },
+      error: (erroBackend) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: erroBackend.error.detalhes,
+        })
+      }
+    })
+  }
+
+
+  cadastrarAluno(aluno: Aluno) {
     this.alunoService.inserir(aluno).subscribe({
       next: () => {
         Swal.fire({
@@ -41,18 +81,14 @@ export class CadastroAlunoComponent implements OnInit{
           showConfirmButton: false,
           timer: 1500
         })
-        this.router.navigate(['/aluno'])
       },
-      error: (error) => {
-        console.error(error)
+      error: (erroBackend) => {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: error.error.detalhes,
+          text: erroBackend.error.detalhes,
         })
-      }})
+      }
+    })
   }
 }
-
-
-
