@@ -24,6 +24,9 @@ export class CadastroAlunoComponent implements OnInit{
       cpf: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
       anoNascimento: new FormControl('', Validators.required),
+      endereco: new FormControl({
+        cep: new FormControl('', Validators.required),
+      })
     });
   }
 
@@ -45,7 +48,7 @@ export class CadastroAlunoComponent implements OnInit{
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Erro ao cadastrar aluno!',
+          text: error.error.detalhes,
         })
       }})
   }

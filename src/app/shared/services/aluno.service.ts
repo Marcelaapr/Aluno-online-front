@@ -8,12 +8,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AlunoService {
-  api = `${environment.api}/aluno/`;
+  api = `${environment.api}/aluno`;
 
   constructor(private clienteHttp: HttpClient) { }
 
   inserir(novoAluno: Aluno): Observable<Aluno>{
-    return this.clienteHttp.post<Aluno>(this.api, novoAluno)
+    return this.clienteHttp.post<Aluno>(
+      `${this.api}/aluno/`, novoAluno);
   }
 
   listar(): Observable<Aluno[]>{
