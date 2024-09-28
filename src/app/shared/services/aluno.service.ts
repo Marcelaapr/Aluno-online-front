@@ -8,27 +8,28 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AlunoService {
-  api = `${environment.api}/aluno/`
-  constructor(private httpclient: HttpClient) { }
+  api = `${environment.api}/aluno/`;
+
+  constructor(private clienteHttp: HttpClient) { }
 
   inserir(novoAluno: Aluno): Observable<Aluno>{
-    return this.httpclient.post<Aluno>(this.api, novoAluno)
+    return this.clienteHttp.post<Aluno>(this.api, novoAluno)
   }
 
   listar(): Observable<Aluno[]>{
-    return this.httpclient.get<Aluno[]>(this.api)
+    return this.clienteHttp.get<Aluno[]>(this.api);
   }
 
   deletar(idAluno: number): Observable<object>{
-    return this.httpclient.delete(`${this.api}${idAluno}`)
+    return this.clienteHttp.delete(`${this.api}${idAluno}`);
   }
 
   pesquisarPorId(id: number): Observable<Aluno> {
-    return this.httpclient.get<Aluno>(`${this.api}${id}`);
+    return this.clienteHttp.get<Aluno>(`${this.api}${id}`);
   }
 
   atualizar(aluno: Aluno): Observable<Aluno> {
-    return this.httpclient.put<Aluno>(`${this.api}${aluno.id}`, aluno);
+    return this.clienteHttp.put<Aluno>(`${this.api}${aluno.id}`, aluno);
   }
 
 
